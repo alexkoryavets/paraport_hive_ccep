@@ -1,0 +1,55 @@
+drop table if exists `ccep`.`m_apx_quarterly_holdings`;
+
+CREATE TABLE `ccep`.`m_apx_quarterly_holdings` (
+	`account_tkn_id` int,
+	`security_tkn_id` int,
+	`reportingperiod` string,
+	`inception_date` date,
+	`accountshortname` string,
+	`sec_type_code` string,
+	`security_symbol` string,
+	`sedol` string,
+	`isin` string,
+	`ticker` string,
+	`cusip` string,
+	`security` string,
+	`lot` int,
+	`quantity` double,
+	`total_cost` double,
+	`total_cost_local` double,
+	`market_value` double,
+	`market_value_local` double,
+	`price_local` double,
+	`local_iso` string,
+	`unrealized_gain_loss` double,
+	`periodenddate` string,
+	`security_name` string)
+PARTITIONED BY (`report_date` date);
+
+insert into `ccep`.`m_apx_quarterly_holdings` partition (report_date)
+SELECT
+	`account_tkn_id`,
+	`security_tkn_id`,
+	`reportingperiod`,
+	`inception_date`,
+	`accountshortname`,
+	`sec_type_code`,
+	`security_symbol`,
+	`sedol`,
+	`isin`,
+	`ticker`,
+	`cusip`,
+	`security`,
+	`lot`,
+	`quantity`,
+	`total_cost`,
+	`total_cost_local`,
+	`market_value`,
+	`market_value_local`,
+	`price_local`,
+	`local_iso`,
+	`unrealized_gain_loss`,
+	`periodenddate`,
+	`security_name`,
+	`report_date`
+FROM `ccep`.`apx_quarterly_holdings`;
