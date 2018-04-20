@@ -14,10 +14,13 @@ select
 	*
 from
 	ccep.union_shadow_advisor_center_account as src
+		inner join
+		ccep.quarterdate as qd on src.reportingperiod = qd.reportingperiod and src.inception_date <= qd.periodenddate
 		left join
 		ccep.vQuarterlyAccountBenchmark as tgt on src.account_tkn_id = tgt.account_tkn_id
 where
-	tgt.account_tkn_id is null;
+	tgt.account_tkn_id is null
+	;
 
 
 
