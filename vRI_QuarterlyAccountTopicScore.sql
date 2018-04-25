@@ -1,4 +1,4 @@
-CREATE VIEW `ccep`.`vRI_QuarterlyAccountTopicScore`
+ALTER VIEW `ccep`.`vRI_QuarterlyAccountTopicScore`
 AS
 WITH AccountSecurity AS
 (

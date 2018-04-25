@@ -71,9 +71,9 @@ SELECT  `account_tkn_id`
         ,`PeriodEndDate`
 --        ,NVL(s.security_name, `SECURITY`) AS security_name
 FROM HoldingS H
-    LEFT JOIN (SELECT `SEDOL`, `TICKER`, MAX(security_tkn_id) AS security_tkn_id FROM `ccep`.`Union_Shadow_SECURITY` where del_ind = 0 and length(SEDOL) > 0 GROUP BY `SEDOL`, `TICKER`) s ON (h.SEDOL_SHORT = s.`SEDOL`)
-    LEFT JOIN (SELECT `CUSIP`, `TICKER`, MAX(security_tkn_id) AS security_tkn_id FROM `ccep`.`Union_Shadow_SECURITY` where del_ind = 0 and length(CUSIP) > 0 GROUP BY `CUSIP`, `TICKER`) c ON (h.CUSIP = c.`CUSIP`)
-    LEFT JOIN (SELECT `ISIN`, `TICKER`, MAX(security_tkn_id) AS security_tkn_id FROM `ccep`.`Union_Shadow_SECURITY` where del_ind = 0 and length(ISIN) > 0 GROUP BY `ISIN`, `TICKER`) i ON (h.ISIN = i.`ISIN`)
+    LEFT JOIN (SELECT `SEDOL`, `TICKER`, MAX(security_tkn_id) AS security_tkn_id FROM (SELECT `SEDOL`, `TICKER`, RANK() over (partition by `SEDOL`, `TICKER` order by del_ind) as rn, security_tkn_id FROM `ccep`.`Union_Shadow_SECURITY` where length(SEDOL) > 0) as sq where rn = 1 GROUP BY `SEDOL`, `TICKER`) s ON (h.SEDOL_SHORT = s.`SEDOL`)
+    LEFT JOIN (SELECT `CUSIP`, `TICKER`, MAX(security_tkn_id) AS security_tkn_id FROM (SELECT `CUSIP`, `TICKER`, RANK() over (partition by `CUSIP`, `TICKER` order by del_ind) as rn, security_tkn_id FROM `ccep`.`Union_Shadow_SECURITY` where length(CUSIP) > 0) as sq where rn = 1 GROUP BY `CUSIP`, `TICKER`) c ON (h.CUSIP = c.`CUSIP`)
+    LEFT JOIN (SELECT `ISIN`,  `TICKER`, MAX(security_tkn_id) AS security_tkn_id FROM (SELECT `ISIN`,  `TICKER`, RANK() over (partition by `ISIN`,  `TICKER` order by del_ind) as rn, security_tkn_id FROM `ccep`.`Union_Shadow_SECURITY` where length(ISIN)  > 0) as sq where rn = 1 GROUP BY `ISIN` , `TICKER`) i ON (h.ISIN = i.`ISIN`)
 where
 	(
 	    h.TICKER IS NULL OR

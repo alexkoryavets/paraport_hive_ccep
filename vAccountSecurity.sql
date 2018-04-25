@@ -17,12 +17,9 @@ WITH agg AS
       ,sum(`TOTAL_COST`) as `TOTAL_COST`
       ,sum(`MARKET_VALUE`) as `MARKET_VALUE`
       ,sum(`UNREALIZED_GAIN_LOSS`) as `UNREALIZED_GAIN_LOSS`
-      ,SUM(CASE WHEN Cash.symbol IS NULL THEN `MARKET_VALUE` ELSE 0 END) AS Security_Value
-      ,SUM(CASE WHEN Cash.symbol IS NULL THEN 0 ELSE `MARKET_VALUE` END) AS Cash_Value
+      ,SUM(CASE WHEN h.SEC_TYPE_CODE like 'ca%' THEN 0 ELSE `MARKET_VALUE` END) AS Security_Value
+      ,SUM(CASE WHEN h.SEC_TYPE_CODE LIKE 'ca%' THEN `MARKET_VALUE` ELSE 0 END) AS Cash_Value
   FROM `ccep`.`m_apx_quarterly_holdings` h
-  LEFT JOIN
-  (SELECT 'CASH' AS symbol UNION ALL SELECT 'divacc' UNION ALL SELECT 'FOREIGNTAX' UNION ALL SELECT 'MARGIN' UNION ALL SELECT 'EVNCASH' UNION ALL SELECT 'EVCCASH' UNION ALL SELECT 'reorg') AS Cash
-  ON h.SECURITY_SYMBOL = Cash.symbol
   GROUP BY `account_tkn_id`
        ,AccountShortName
       ,`ReportingPeriod`
